@@ -97,30 +97,29 @@
             border-radius: 50%;
         }
 
-        .header-subtitle {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-            margin-top: 2px;
-            text-transform: uppercase;
-        }
-
         /* 主内容 - 横向排列 */
         .main-content {
             display: flex;
             gap: 12px;
             flex: 1;
             margin-top: 6px;
-            min-height: 0; /* 允许flex子项收缩 */
+            min-height: 0;
         }
 
-        /* 左侧面板 */
+        /* 左侧面板 - 60% */
         .left-panel {
-            flex: 0 0 220px;
+            flex: 0 0 60%;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            min-width: 180px;
+        }
+
+        /* 右侧面板 - 40% */
+        .right-panel {
+            flex: 0 0 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .card {
@@ -289,15 +288,6 @@
         }
         .btn-skip:active { background: rgba(230, 126, 34, 0.1); }
 
-        /* 右侧面板 */
-        .right-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 200px;
-        }
-
         .leaderboard-header {
             display: flex;
             align-items: center;
@@ -322,13 +312,12 @@
         .player-list {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
             flex: 1;
             overflow-y: auto;
-            /* 设置一个最大高度，确保大约显示10个选手，其余滚动 */
-            max-height: 380px; /* 每个玩家行大约38px高度，10个380px */
             padding-right: 4px;
             -webkit-overflow-scrolling: touch;
+            /* 移除最大高度限制，让列表自动填充可用空间 */
         }
 
         .player-list::-webkit-scrollbar {
@@ -345,10 +334,10 @@
         .player-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: var(--bg-card);
-            border-radius: 10px;
-            padding: 7px 10px;
+            border-radius: 8px;
+            padding: 4px 8px;
             border: 1px solid var(--border-color);
             transition: all 0.3s;
             animation: fadeInRow 0.3s ease-out;
@@ -366,14 +355,14 @@
         }
 
         .player-avatar-wrap {
-            flex: 0 0 32px;
-            width: 32px;
-            height: 32px;
+            flex: 0 0 24px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             overflow: hidden;
             cursor: pointer;
             position: relative;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             background: var(--bg-card-alt);
             display: flex;
             align-items: center;
@@ -388,7 +377,7 @@
         }
 
         .player-avatar-placeholder {
-            font-size: 1rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -398,13 +387,13 @@
             position: absolute;
             bottom: -2px;
             right: -2px;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: var(--gold-dark);
             border-radius: 50%;
-            font-size: 7px;
+            font-size: 6px;
             color: #fff;
-            border: 2px solid var(--bg-card);
+            border: 1.5px solid var(--bg-card);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -415,7 +404,7 @@
             min-width: 0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: wrap;
         }
 
@@ -424,12 +413,12 @@
             border: none;
             border-bottom: 1px dashed transparent;
             color: var(--text-primary);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 500;
-            padding: 2px 3px;
+            padding: 1px 2px;
             width: auto;
-            min-width: 45px;
-            max-width: 90px;
+            min-width: 40px;
+            max-width: 70px;
             outline: none;
             font-family: inherit;
             letter-spacing: 0.02em;
@@ -445,31 +434,31 @@
             align-items: center;
             gap: 2px;
             background: rgba(200, 160, 60, 0.08);
-            border-radius: 6px;
-            padding: 2px 5px;
+            border-radius: 5px;
+            padding: 1px 4px;
         }
 
         .trophy-icon-sm {
-            font-size: 0.85rem;
+            font-size: 0.65rem;
         }
 
         .champ-count {
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--gold-light);
-            min-width: 16px;
+            min-width: 14px;
             text-align: center;
         }
 
         .champ-btn {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             border: 1px solid rgba(200, 160, 60, 0.35);
             background: transparent;
             color: var(--gold-light);
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -484,15 +473,15 @@
         }
 
         .btn-delete-player {
-            flex: 0 0 24px;
-            width: 24px;
-            height: 24px;
+            flex: 0 0 20px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             border: 1px solid transparent;
             background: transparent;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -573,22 +562,20 @@
             margin-top: 2px;
         }
 
-        /* 响应式：在更小屏幕上进一步缩小左侧面板 */
+        /* 响应式：在更小屏幕上进一步缩小 */
         @media (max-width: 480px) {
-            .left-panel {
-                flex: 0 0 160px;
-                min-width: 140px;
-            }
+            .left-panel { flex: 0 0 60%; }
+            .right-panel { flex: 0 0 40%; }
             .header-title { font-size: 1.8rem; }
             .level-number { font-size: 1.4rem; }
             .blinds-value { font-size: 1.1rem; }
             .timer-value { font-size: 1.8rem; }
             .btn { font-size: 0.7rem; padding: 6px 4px; }
-            .player-row { padding: 5px 8px; gap: 5px; }
-            .player-avatar-wrap { flex:0 0 28px; width:28px; height:28px; }
-            .player-name-input { font-size: 0.7rem; max-width: 70px; }
-            .champ-btn { width: 16px; height: 16px; font-size: 0.6rem; }
-            .player-list { max-height: 320px; }
+            .player-row { padding: 3px 6px; gap: 4px; }
+            .player-avatar-wrap { flex:0 0 20px; width:20px; height:20px; }
+            .player-name-input { font-size: 0.6rem; max-width: 55px; }
+            .champ-btn { width: 12px; height: 12px; font-size: 0.5rem; }
+            .trophy-icon-sm { font-size: 0.6rem; }
         }
     </style>
 </head>
@@ -596,11 +583,10 @@
     <div class="app-container">
         <header class="header">
             <h1 class="header-title">All in Night</h1>
-            <p class="header-subtitle">Texas Hold'em Blind Timer</p>
         </header>
 
         <div class="main-content">
-            <!-- 左侧面板 -->
+            <!-- 左侧面板 - 60% -->
             <div class="left-panel">
                 <div class="card">
                     <div class="level-display">
@@ -627,7 +613,7 @@
                 <button class="btn btn-add-player" id="btnAddPlayer">+ 添加选手</button>
             </div>
 
-            <!-- 右侧面板 - 最强王者 -->
+            <!-- 右侧面板 - 40% -->
             <div class="right-panel">
                 <div class="leaderboard-header">
                     <span class="leaderboard-title">
@@ -653,7 +639,6 @@
 
     <script>
         (function() {
-            // 盲注级别（第二级已改为200/400）
             const BLIND_LEVELS = [
                 { level: 1, small: 100, big: 200 },
                 { level: 2, small: 200, big: 400 },
@@ -674,7 +659,6 @@
             const TOTAL_LEVELS = BLIND_LEVELS.length;
             const LEVEL_DURATION_SECONDS = 5 * 60;
 
-            // DOM元素
             const $levelNumber = document.getElementById('levelNumber');
             const $blindsValue = document.getElementById('blindsValue');
             const $timerValue = document.getElementById('timerValue');
@@ -689,7 +673,6 @@
             const $levelUpBlinds = document.getElementById('levelUpBlinds');
             const $avatarFileInput = document.getElementById('avatarFileInput');
 
-            // 状态变量
             let currentLevelIndex = 0;
             let remainingSeconds = LEVEL_DURATION_SECONDS;
             let isRunning = false;
@@ -1056,7 +1039,6 @@
                 setTimeout(()=> $playerList.scrollTop = $playerList.scrollHeight, 200);
             }
 
-            // 页面可见性处理
             document.addEventListener('visibilitychange', ()=>{
                 if(document.hidden) {
                     if(isRunning && timerInterval) document._hiddenAt = Date.now();
@@ -1084,14 +1066,12 @@
                 }
             });
 
-            // 事件绑定
             $btnStart.addEventListener('click', ()=> isRunning ? pauseTimer() : startTimer());
             $btnReset.addEventListener('click', ()=> { if(confirm('确定重置到第1级别吗？')) resetTimer(); });
             $btnSkip.addEventListener('click', ()=> { if(isRunning && !confirm('确定跳过当前级别吗？')) return; skipLevel(); });
             $btnAddPlayer.addEventListener('click', addPlayer);
             $avatarFileInput.addEventListener('change', handleAvatarFileSelect);
 
-            // 键盘快捷键
             document.addEventListener('keydown', (e)=>{
                 if(e.target.tagName === 'INPUT' && e.target.type === 'text') return;
                 switch(e.key.toLowerCase()) {
@@ -1102,7 +1082,6 @@
                 }
             });
 
-            // 初始化
             function init() {
                 if(!loadData()) {
                     players = [
