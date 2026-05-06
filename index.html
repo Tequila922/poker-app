@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>All in night</title>
+    
+    <!-- PWA 全屏 & 图标 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="升盲扑克">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%230a0e14'/><text x='90' y='110' font-size='90' text-anchor='middle' fill='%23c8a84e'>🃏</text></svg>">
+    <link rel="icon" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='38' fill='%230a0e14'/><text x='96' y='118' font-size='96' text-anchor='middle' fill='%23c8a84e'>🃏</text></svg>">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22All%20in%20night%22%2C%22short_name%22%3A%22%E5%8D%87%E7%9B%B2%E6%89%91%E5%85%8B%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0e14%22%2C%22theme_color%22%3A%22%230a0e14%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20192%20192'%3E%3Crect%20width%3D'192'%20height%3D'192'%20rx%3D'38'%20fill%3D'%230a0e14'%2F%3E%3Ctext%20x%3D'96'%20y%3D'118'%20font-size%3D'96'%20text-anchor%3D'middle'%20fill%3D'%23c8a84e'%3E%F0%9F%83%8F%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+    
+    <style>
+        /* 这里保持之前第二版的全部 CSS，不变 */
+        :root {
+            --bg: #0a0e14;
+            --card-bg: #111820;
+            --card-border: #1e2a36;
+            --gold: #c8a84e;
+            --gold-light: #e0c56e;
+            --text: #d0d5dc;
+            --text-secondary: #8899aa;
+            --text-bright: #f0f2f5;
+            --danger: #c0392b;
+            --green: #27ae60;
+            --green-hover: #2ecc71;
+            --orange: #e67e22;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --radius: 12px;
+        }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none; user-select: none;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 8px;
+        }
+        .app-container {
+            width: 100%; max-width: 700px;
+            display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px;
+        }
+        .header { text-align: center; padding: 8px 0 4px; }
+        .header-title {
+            font-size: 1.8rem; font-weight: 700;
+            color: var(--gold-light); letter-spacing: 0.05em;
+        }
+        .main-layout { display: flex; gap: 10px; flex-direction: column; }
+        @media (min-width: 600px) {
+            .main-layout { flex-direction: row; }
+            .panel-left { flex: 1 1 45%; }
+            .panel-right { flex: 1 1 55%; }
+        }
+        .panel {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow);
+        }
+        .panel-left { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .level-text { font-size: 1rem; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.05em; }
+        .blinds {
+            font-size: 2.2rem; font-weight: 700; color: var(--gold-light);
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+        }
+        .timer {
+            font-size: 3.8rem; font-weight: 800; color: var(--text-bright);
+            font-family: 'SF Mono', 'Cascadia Code', monospace; transition: color 0.3s;
+        }
+        .timer.warning { color: var(--orange); }
+        .timer.danger { color: var(--danger); }
+        .button-row { display: flex; gap: 8px; width: 100%; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+            border: none; cursor: pointer; transition: 0.2s; letter-spacing: 0.04em;
+            font-family: inherit; min-width: 70px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-start { background: var(--green); color: #fff; }
+        .btn-pause { background: var(--orange); color: #fff; }
+        .btn-reset { background: transparent; color: var(--text-secondary); border: 1px solid var(--card-border); }
+        .btn-reset:hover { border-color: #555; color: var(--text-bright); }
+        .panel-right { display: flex; flex-direction: column; gap: 8px; max-height: 65vh; max-height: 65dvh; overflow-y: auto; }
+        .section-title { text-align: center; font-size: 0.8rem; color: var(--text-secondary); letter-spacing: 0.08em; margin-bottom: 4px; }
+        .player-item { display: flex; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 8px; border: 1px solid transparent; transition: 0.2s; background: rgba(255,255,255,0.02); }
+        .player-item:hover { border-color: var(--card-border); background: rgba(255,255,255,0.04); }
+        .player-avatar {
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+            background: #1a2230; border: 1px solid var(--card-border); flex-shrink: 0;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 600; color: var(--text-secondary); overflow: hidden;
+        }
+        .player-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .player-name {
+            flex: 1; background: transparent; border: none; color: var(--text-bright);
+            font-size: 0.9rem; font-weight: 500; outline: none; padding: 4px 6px;
+            border-radius: 4px; cursor: pointer; font-family: inherit;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            -webkit-user-select: text; user-select: text;
+        }
+        .player-name:focus { background: rgba(200,168,78,0.1); border: 1px solid var(--gold); cursor: text; }
+        .champion-control { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .champion-btn {
+            width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--card-border);
+            background: transparent; color: var(--text-secondary); font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            line-height: 1; transition: 0.2s; font-family: inherit;
+        }
+        .champion-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+        .champion-count { font-weight: 700; color: var(--gold-light); min-width: 20px; text-align: center; font-size: 0.9rem; }
+        .delete-btn {
+            width: 28px; height: 28px; border-radius: 50%; border: 1px solid transparent;
+            background: transparent; color: var(--text-secondary); font-size: 1rem;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-family: inherit;
+        }
+        .delete-btn:hover { border-color: var(--danger); color: var(--danger); }
+        .add-player-btn {
+            background: #2a6db5; color: #fff; border: none; padding: 10px 16px;
+            border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            letter-spacing: 0.04em; transition: 0.2s; font-family: inherit; width: 100%; margin-top: 6px;
+        }
+        .add-player-btn:hover { background: #3a8de0; }
+        .empty-hint { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.8rem; }
+        .hidden-input { display: none; }
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #1a2230; border: 1px solid var(--card-border); color: var(--text-bright);
+            padding: 8px 20px; border-radius: 20px; font-size: 0.8rem; z-index: 200;
+            box-shadow: var(--shadow); animation: slideUp 0.3s ease-out; pointer-events: none;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="header-title">All in night</div>
+        </div>
+        <div class="main-layout">
+            <div class="panel panel-left">
+                <div class="level-text" id="levelText">第1级别</div>
+                <div class="blinds" id="blindsDisplay">100 / 200</div>
+                <div class="timer" id="timerDisplay">05:00</div>
+                <div class="button-row">
+                    <button class="btn btn-start" id="btnStart">▶ 开始</button>
+                    <button class="btn btn-pause" id="btnPause" style="display:none;">⏸ 暂停</button>
+                    <button class="btn btn-reset" id="btnReset">↺ 重置</button>
+                </div>
+            </div>
+            <div class="panel panel-right">
+                <div class="section-title">选手积分榜</div>
+                <div id="playersList"><div class="empty-hint">暂无选手，点击下方添加</div></div>
+                <button class="add-player-btn" id="btnAddPlayer">+ 添加选手</button>
+            </div>
+        </div>
+    </div>
+    <input type="file" accept="image/*" class="hidden-input" id="avatarInput">
+
+    <script>
+        // ===== Service Worker 注册（离线缓存） =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("data:application/javascript," + encodeURIComponent(
+                    "self.addEventListener('install',e=>{e.waitUntil(caches.open('poker-v1').then(c=>c.addAll(['.'])))})"+
+                    "self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))})"
+                )).catch(() => {});
+            });
+        }
+
+        // ===== 应用逻辑（与第二版完全一致） =====
+        (function() {
+            const TOTAL_LEVELS = 15;
+            const LEVEL_DURATION = 5 * 60;
+            const BLINDS = [
+                { small: 100, big: 200 }, { small: 200, big: 400 }, { small: 300, big: 600 },
+                { small: 400, big: 800 }, { small: 500, big: 1000 }, { small: 600, big: 1200 },
+                { small: 800, big: 1600 }, { small: 1000, big: 2000 }, { small: 1500, big: 3000 },
+                { small: 2000, big: 4000 }, { small: 3000, big: 6000 }, { small: 4000, big: 8000 },
+                { small: 5000, big: 10000 }, { small: 6000, big: 12000 }, { small: 8000, big: 16000 }
+            ];
+            const STORAGE_KEY = 'poker_blind_app_v4';
+            const AVATAR_KEY = 'poker_avatars_v4';
+            const MAX_AVATAR_SIZE = 120;
+
+            const $levelText = document.getElementById('levelText');
+            const $blindsDisplay = document.getElementById('blindsDisplay');
+            const $timerDisplay = document.getElementById('timerDisplay');
+            const $btnStart = document.getElementById('btnStart');
+            const $btnPause = document.getElementById('btnPause');
+            const $btnReset = document.getElementById('btnReset');
+            const $btnAddPlayer = document.getElementById('btnAddPlayer');
+            const $playersList = document.getElementById('playersList');
+            const $avatarInput = document.getElementById('avatarInput');
+
+            let currentLevel = 1;
+            let remainingSeconds = LEVEL_DURATION;
+            let isRunning = false;
+            let timerInterval = null;
+            let players = [];
+            let avatars = {};
+            let editingAvatarId = null;
+
+            function formatTime(s) {
+                const mins = Math.floor(Math.max(0, s) / 60);
+                const secs = Math.floor(Math.max(0, s) % 60);
+                return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+            }
+
+            function showToast(msg) {
+                const el = document.createElement('div');
+                el.className = 'toast';
+                el.textContent = msg;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 2000);
+            }
+
+            function saveAll() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        players, currentLevel, remainingSeconds, isRunning, lastUpdate: Date.now()
+                    }));
+                    localStorage.setItem(AVATAR_KEY, JSON.stringify(avatars));
+                } catch(e) {}
+            }
+
+            function loadAll() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const data = JSON.parse(raw);
+                        players = data.players || [];
+                        currentLevel = data.currentLevel || 1;
+                        remainingSeconds = data.remainingSeconds ?? LEVEL_DURATION;
+                        isRunning = data.isRunning || false;
+                        if (isRunning && data.lastUpdate) {
+                            const elapsed = Math.floor((Date.now() - data.lastUpdate) / 1000);
+                            if (elapsed > 0) {
+                                let total = remainingSeconds - elapsed;
+                                while (total <= 0 && currentLevel < TOTAL_LEVELS) {
+                                    total += LEVEL_DURATION;
+                                    currentLevel++;
+                                }
+                                if (currentLevel >= TOTAL_LEVELS && total <= 0) {
+                                    currentLevel = TOTAL_LEVELS;
+                                    remainingSeconds = 0;
+                                    isRunning = false;
+                                } else {
+                                    remainingSeconds = Math.max(0, Math.min(LEVEL_DURATION, total));
+                                }
+                            }
+                        }
+                    }
+                    const avaRaw = localStorage.getItem(AVATAR_KEY);
+                    if (avaRaw) avatars = JSON.parse(avaRaw);
+                } catch(e) {
+                    players = [];
+                    currentLevel = 1;
+                    remainingSeconds = LEVEL_DURATION;
+                    isRunning = false;
+                }
+            }
+
+            function advanceLevel() {
+                if (currentLevel < TOTAL_LEVELS) {
+                    currentLevel++;
+                    remainingSeconds = LEVEL_DURATION;
+                    updateUI();
+                    showToast('🔔 升至第' + currentLevel + '级别');
+                } else {
+                    currentLevel = TOTAL_LEVELS;
+                    remainingSeconds = 0;
+                    isRunning = false;
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    updateUI();
+                    showToast('🏆 比赛结束！');
+                }
+                saveAll();
+            }
+
+            function tick() {
+                if (!isRunning) return;
+                if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                    $timerDisplay.textContent = formatTime(remainingSeconds);
+                    if (remainingSeconds <= 30) $timerDisplay.classList.add('warning');
+                    if (remainingSeconds <= 10) {
+                        $timerDisplay.classList.add('danger');
+                        $timerDisplay.classList.remove('warning');
+                    }
+                    if (remainingSeconds > 30) $timerDisplay.classList.remove('warning', 'danger');
+                    saveAll();
+                    if (remainingSeconds <= 0) advanceLevel();
+                } else {
+                    advanceLevel();
+                }
+            }
+
+            function startTimer() {
+                if (currentLevel === TOTAL_LEVELS && remainingSeconds <= 0) return;
+                isRunning = true;
+                clearInterval(timerInterval);
+                timerInterval = setInterval(tick, 1000);
+                updateUI();
+                saveAll();
+            }
+
+            function pauseTimer() {
+                isRunning = false;
+                clearInterval(timerInterval);
+                timerInterval = null;
+                updateUI();
+                saveAll();
+            }
+
+            function resetTimer() {
+                if (!confirm('确定重置到第1级别吗？')) return;
+                pauseTimer();
+                currentLevel = 1;
+                remainingSeconds = LEVEL_DURATION;
+                updateUI();
+                saveAll();
+            }
+
+            function generateId() {
+                return 'p' + Date.now() + Math.random().toString(36).substr(2, 6);
+            }
+
+            function addPlayer(name) {
+                const id = generateId();
+                players.push({ id, name: name || '选手 ' + (players.length+1), championCount: 0 });
+                saveAll();
+                renderPlayers();
+            }
+
+            function deletePlayer(id) {
+                const p = players.find(x => x.id === id);
+                if (!p || !confirm('删除选手「' + p.name + '」？')) return;
+                players = players.filter(x => x.id !== id);
+                delete avatars[id];
+                saveAll();
+                renderPlayers();
+            }
+
+            function updateName(id, newName) {
+                const p = players.find(x => x.id === id);
+                if (p && newName.trim()) {
+                    p.name = newName.trim();
+                    saveAll();
+                    renderPlayers();
+                }
+            }
+
+            function changeChampion(id, delta) {
+                const p = players.find(x => x.id === id);
+                if (p) {
+                    p.championCount = Math.max(0, p.championCount + delta);
+                    saveAll();
+                    renderPlayers();
+                }
+            }
+
+            function compressImage(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let w = img.width, h = img.height;
+                            if (w > h) { if (w > MAX_AVATAR_SIZE) { h *= MAX_AVATAR_SIZE/w; w = MAX_AVATAR_SIZE; } }
+                            else { if (h > MAX_AVATAR_SIZE) { w *= MAX_AVATAR_SIZE/h; h = MAX_AVATAR_SIZE; } }
+                            canvas.width = w; canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            ctx.fillStyle = '#1a2230';
+                            ctx.fillRect(0,0,w,h);
+                            ctx.drawImage(img,0,0,w,h);
+                            resolve(canvas.toDataURL('image/jpeg', 0.6));
+                        };
+                        img.onerror = reject;
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            $avatarInput.addEventListener('change', async function() {
+                if (!this.files[0] || !editingAvatarId) return;
+                try {
+                    const dataUrl = await compressImage(this.files[0]);
+                    avatars[editingAvatarId] = dataUrl;
+                    saveAll();
+                    renderPlayers();
+                    showToast('头像已更新');
+                } catch(e) {
+                    showToast('头像加载失败');
+                }
+                editingAvatarId = null;
+                this.value = '';
+            });
+
+            function renderPlayers() {
+                const sorted = [...players].sort((a,b) => b.championCount - a.championCount);
+                if (sorted.length === 0) {
+                    $playersList.innerHTML = '<div class="empty-hint">暂无选手，点击下方添加</div>';
+                    return;
+                }
+                let html = '';
+                sorted.forEach(p => {
+                    const ava = avatars[p.id];
+                    html += `
+                        <div class="player-item">
+                            <div class="player-avatar" onclick="window._uploadAvatar('${p.id}')" title="点击上传头像">
+                                ${ava ? `<img src="${ava}" alt="头像">` : p.name.charAt(0)}
+                            </div>
+                            <input class="player-name" value="${p.name.replace(/"/g,'&quot;')}"
+                                onfocus="this.select()"
+                                onblur="window._updateName('${p.id}', this.value)"
+                                onkeydown="if(event.key==='Enter') this.blur()"
+                                maxlength="20"
+                            >
+                            <div class="champion-control">
+                                <button class="champion-btn" onclick="window._champion('${p.id}', -1)">−</button>
+                                <span class="champion-count">${p.championCount}</span>
+                                <button class="champion-btn" onclick="window._champion('${p.id}', 1)">+</button>
+                            </div>
+                            <button class="delete-btn" onclick="window._deletePlayer('${p.id}')" title="删除">🗑</button>
+                        </div>
+                    `;
+                });
+                $playersList.innerHTML = html;
+            }
+
+            function updateUI() {
+                $levelText.textContent = '第' + currentLevel + '级别';
+                const blind = BLINDS[currentLevel-1];
+                $blindsDisplay.textContent = blind.small.toLocaleString() + ' / ' + blind.big.toLocaleString();
+                $timerDisplay.textContent = formatTime(remainingSeconds);
+                $timerDisplay.classList.remove('warning', 'danger');
+                if (isRunning) {
+                    if (remainingSeconds <= 10) $timerDisplay.classList.add('danger');
+                    else if (remainingSeconds <= 30) $timerDisplay.classList.add('warning');
+                }
+                if (isRunning) {
+                    $btnStart.style.display = 'none';
+                    $btnPause.style.display = '';
+                } else {
+                    $btnStart.style.display = '';
+                    $btnPause.style.display = 'none';
+                }
+            }
+
+            window._uploadAvatar = function(id) { editingAvatarId = id; $avatarInput.click(); };
+            window._updateName = function(id, val) { updateName(id, val); };
+            window._champion = function(id, delta) { changeChampion(id, delta); };
+            window._deletePlayer = function(id) { deletePlayer(id); };
+
+            $btnStart.addEventListener('click', startTimer);
+            $btnPause.addEventListener('click', pauseTimer);
+            $btnReset.addEventListener('click', resetTimer);
+            $btnAddPlayer.addEventListener('click', () => {
+                const name = prompt('选手名字：', '选手 ' + (players.length+1));
+                if (name !== null) addPlayer(name.trim() || '选手 ' + (players.length+1));
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) saveAll();
+                else {
+                    loadAll();
+                    updateUI();
+                    renderPlayers();
+                    if (isRunning && !(currentLevel===TOTAL_LEVELS && remainingSeconds<=0)) {
+                        clearInterval(timerInterval);
+                        timerInterval = setInterval(tick, 1000);
+                    }
+                }
+            });
+
+            loadAll();
+            if (currentLevel === TOTAL_LEVELS && remainingSeconds <= 0) isRunning = false;
+            updateUI();
+            renderPlayers();
+            if (isRunning) timerInterval = setInterval(tick, 1000);
+            setInterval(() => { if (isRunning) saveAll(); }, 10000);
+        })();
+    </script>
+</body>
+</html>
